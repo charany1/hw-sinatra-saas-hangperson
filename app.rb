@@ -31,8 +31,8 @@ class HangpersonApp < Sinatra::Base
     # NOTE: don't change previous line - it's needed by autograder!
 
     @game = HangpersonGame.new(word)
-    #redirect '/show'
-    erb :show
+    redirect '/show'
+    #erb :show
   end
   
   # Use existing methods in HangpersonGame to process a guess.
@@ -40,12 +40,20 @@ class HangpersonApp < Sinatra::Base
   # If a guess is invalid, set flash[:message] to "Invalid guess."
   post '/guess' do
     letter = params[:guess].to_s[0]
+    
+    if(letter.nil?)
+      letter = ""
+    end
+    
+     
+    
     ### YOUR CODE HERE ###
-    if(@game.word_with_guesses.include?letter.downcase) || (@game.wrong_guesses.include?letter.downcase)
+    if(@game.word_with_guesses.include?(letter.downcase)) || (@game.wrong_guesses.include?(letter.downcase))
       flash[:message] = "You have already used that letter."
     elsif (!@game.word.include?letter.downcase)
       flash[:message] = "Invalid guess."
     end
+    
     
     @game.guess letter
     redirect '/show'
@@ -71,12 +79,20 @@ class HangpersonApp < Sinatra::Base
   
   get '/win' do
     ### YOUR CODE HERE ###
-    erb :win # You may change/remove this line
+    if @game.check_win_or_lose == :lose
+      erb :win
+    else
+      redirect '/show'
+    end
   end
   
   get '/lose' do
     ### YOUR CODE HERE ###
-    erb :lose # You may change/remove this line
+    if @game.check_win_or_lose == :lose
+      erb :lose
+    else
+      redirect '/show'
+    end
   end
   
 end
